@@ -89,6 +89,7 @@
       word-break: break-word;
       transition: opacity 0.3s ease;
       letter-spacing: 0.3px;
+      min-height: 80px;
     }
 
     .swahili-verse {
@@ -102,6 +103,7 @@
       word-break: break-word;
       border-top: 1px dashed #d9b382;
       padding-top: 1.3rem;
+      min-height: 60px;
     }
 
     .counter {
@@ -215,6 +217,12 @@
       opacity: 0.4;
     }
 
+    .empty-message {
+      color: #ab8b6e;
+      font-style: italic;
+      padding: 2rem;
+    }
+
     @media (max-width: 500px) {
       .card {
         padding: 2.2rem 1.5rem;
@@ -243,7 +251,7 @@
         <div class="verse-icon">🌿✨🌼</div>
         <div id="englishDisplay" class="english-verse fade-in"></div>
         <div id="swahiliDisplay" class="swahili-verse fade-in"></div>
-        <div class="counter" id="verseCounter">1 / 12</div>
+        <div class="counter" id="verseCounter"></div>
       </div>
 
       <div class="nav-buttons">
@@ -257,59 +265,42 @@
 
   <script>
     (function() {
-      const verses = [
-        {
-          en: "“There is only one you in this world.”",
-          sw: "Kuna wewe mmoja tu duniani kote."
-        },
-        {
-          en: "“Your uniqueness is your superpower.”",
-          sw: "Upekee wako ndio nguvu yako kuu."
-        },
-        {
-          en: "“Don't compare yourself to others; you are a masterpiece.”",
-          sw: "Usijilinganishe na wengine; wewe ni kazi bora ya sanaa."
-        },
-        {
-          en: "“Be yourself; everyone else is already taken.”",
-          sw: "Kuwa wewe mwenyewe; kila mtu mwingine tayari amechukuliwa."
-        },
-        {
-          en: "“Your difference is your beauty.”",
-          sw: "Tofauti yako ndio urembo wako."
-        },
-        {
-          en: "“You were born to stand out, not to fit in.”",
-          sw: "Umezaliwa kuangaza, siyo kufanana na wote."
-        },
-        {
-          en: "“No one can play your role better than you.”",
-          sw: "Hakuna anayeweza kucheza nafasi yako vizuri kuliko wewe."
-        },
-        {
-          en: "“Your voice matters because no one speaks like you.”",
-          sw: "Sauti yako ni muhimu kwa sababu hakuna anayesema kama wewe."
-        },
-        {
-          en: "“The world needs the original you, not a copy.”",
-          sw: "Ulimwengu unahitaji wewe halisi, siyo nakala."
-        },
-        {
-          en: "“Celebrate who you are — flaws and all.”",
-          sw: "Sherehekea ulivyo — na makosa yako pamoja na yote."
-        },
-        {
-          en: "“You are not a drop in the ocean; you are the entire ocean in a drop.”",
-          sw: "Wewe si tone baharini; wewe ni bahari nzima ndani ya tone."
-        },
-        {
-          en: "“Your story is written by no one else but you.”",
-          sw: "Hadithi yako imeandikwa na mtu mwingine yeyote isipokuwa wewe."
-        }
+      // Default verses (fallback if localStorage is empty)
+      const DEFAULT_VERSES = [
+        { en: "“There is only one you in this world.”", sw: "Kuna wewe mmoja tu duniani kote." },
+        { en: "“Your uniqueness is your superpower.”", sw: "Upekee wako ndio nguvu yako kuu." },
+        { en: "“Don't compare yourself to others; you are a masterpiece.”", sw: "Usijilinganishe na wengine; wewe ni kazi bora ya sanaa." },
+        { en: "“Be yourself; everyone else is already taken.”", sw: "Kuwa wewe mwenyewe; kila mtu mwingine tayari amechukuliwa." },
+        { en: "“Your difference is your beauty.”", sw: "Tofauti yako ndio urembo wako." },
+        { en: "“You were born to stand out, not to fit in.”", sw: "Umezaliwa kuangaza, siyo kufanana na wote." },
+        { en: "“No one can play your role better than you.”", sw: "Hakuna anayeweza kucheza nafasi yako vizuri kuliko wewe." },
+        { en: "“Your voice matters because no one speaks like you.”", sw: "Sauti yako ni muhimu kwa sababu hakuna anayesema kama wewe." },
+        { en: "“The world needs the original you, not a copy.”", sw: "Ulimwengu unahitaji wewe halisi, siyo nakala." },
+        { en: "“Celebrate who you are — flaws and all.”", sw: "Sherehekea ulivyo — na makosa yako pamoja na yote." },
+        { en: "“You are not a drop in the ocean; you are the entire ocean in a drop.”", sw: "Wewe si tone baharini; wewe ni bahari nzima ndani ya tone." },
+        { en: "“Your story is written by no one else but you.”", sw: "Hadithi yako imeandikwa na mtu mwingine yeyote isipokuwa wewe." }
       ];
 
+      // 🔑 KEY FIX: Read from same localStorage key as admin panel
+      function getVerses() {
+        const stored = localStorage.getItem('adminPeaceVerses');
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (parsed && parsed.length > 0) {
+              return parsed;
+            }
+          } catch (e) {
+            console.error('Error reading verses:', e);
+          }
+        }
+        // Fallback to defaults
+        return [...DEFAULT_VERSES];
+      }
+
       let currentIndex = 0;
-      const totalVerses = verses.length;
+      let verses = getVerses();
+      let totalVerses = verses.length;
 
       const startSection = document.getElementById('startSection');
       const revealBtn = document.getElementById('revealCardBtn');
@@ -320,13 +311,36 @@
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
 
+      function refreshVerses() {
+        verses = getVerses();
+        totalVerses = verses.length;
+      }
+
       function updateVerseDisplay() {
-        const verse = verses[currentIndex];
+        refreshVerses();
         
+        if (totalVerses === 0) {
+          englishDisplay.innerHTML = '<div class="empty-message">No verses available</div>';
+          swahiliDisplay.textContent = '';
+          verseCounter.textContent = '0 / 0';
+          prevBtn.disabled = true;
+          nextBtn.disabled = true;
+          return;
+        }
+
+        if (currentIndex >= totalVerses) {
+          currentIndex = totalVerses - 1;
+        }
+        if (currentIndex < 0) {
+          currentIndex = 0;
+        }
+
+        const verse = verses[currentIndex];
         englishDisplay.textContent = verse.en;
         swahiliDisplay.textContent = verse.sw;
         verseCounter.textContent = `${currentIndex + 1} / ${totalVerses}`;
 
+        // Re-trigger animation
         englishDisplay.classList.remove('fade-in');
         swahiliDisplay.classList.remove('fade-in');
         void englishDisplay.offsetWidth;
@@ -342,10 +356,12 @@
         startSection.classList.add('hidden');
         verseCardContainer.classList.remove('hidden');
         currentIndex = 0;
+        refreshVerses();
         updateVerseDisplay();
       }
 
       function nextVerse() {
+        refreshVerses();
         if (currentIndex < totalVerses - 1) {
           currentIndex++;
           updateVerseDisplay();
@@ -359,27 +375,42 @@
         }
       }
 
+      // Event listeners
       revealBtn.addEventListener('click', revealCard);
       prevBtn.addEventListener('click', prevVerse);
       nextBtn.addEventListener('click', nextVerse);
 
+      // Keyboard navigation
       window.addEventListener('keydown', function(e) {
-        if (!startSection.classList.contains('hidden')) return;
-        
-        if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          if (!prevBtn.disabled) prevVerse();
-        } else if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          if (!nextBtn.disabled) nextVerse();
+        if (startSection.classList.contains('hidden')) {
+          if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            if (!prevBtn.disabled) prevVerse();
+          } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            refreshVerses();
+            if (!nextBtn.disabled) nextVerse();
+          }
         }
       });
 
-      englishDisplay.textContent = verses[0].en;
-      swahiliDisplay.textContent = verses[0].sw;
-      verseCounter.textContent = `1 / ${totalVerses}`;
-      prevBtn.disabled = true;
-      nextBtn.disabled = (totalVerses === 1);
+      // 🔄 Listen for storage changes from admin panel
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'adminPeaceVerses') {
+          refreshVerses();
+          if (!startSection.classList.contains('hidden')) return;
+          updateVerseDisplay();
+        }
+      });
+
+      // Initialize
+      if (verses.length > 0) {
+        englishDisplay.textContent = verses[0].en;
+        swahiliDisplay.textContent = verses[0].sw;
+        verseCounter.textContent = `1 / ${totalVerses}`;
+        prevBtn.disabled = true;
+        nextBtn.disabled = (totalVerses === 1);
+      }
     })();
   </script>
 </body>
