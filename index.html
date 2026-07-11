@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Unique You · Peace Verses</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Admin Link (subtle) -->
+    <a href="admin.html" class="admin-link" title="Admin Panel">⚙️</a>
+
+    <!-- Initial press button -->
+    <div id="startSection" class="start-btn-wrapper">
+      <button id="revealCardBtn" class="reveal-btn">✨ Open the verse ✨</button>
+    </div>
+
+    <!-- Verse Card (initially hidden) -->
+    <div id="verseCardContainer" class="hidden">
+      <div class="card" id="verseCard">
+        <div class="verse-icon">🌿✨🌼</div>
+        <div id="englishDisplay" class="english-verse fade-in">
+          <!-- English verse -->
+        </div>
+        <div id="swahiliDisplay" class="swahili-verse fade-in">
+          <!-- Swahili verse -->
+        </div>
+        <div class="counter" id="verseCounter">1 / 12</div>
+      </div>
+
+      <!-- Navigation buttons -->
+      <div class="nav-buttons">
+        <button id="prevBtn" class="btn" title="Previous verse">← <span>Previous</span></button>
+        <button id="nextBtn" class="btn" title="Next verse"><span>Next</span> →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
