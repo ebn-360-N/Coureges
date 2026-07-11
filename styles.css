@@ -1,4 +1,3 @@
-/* === Shared Styles for Verse System === */
 * {
   margin: 0;
   padding: 0;
@@ -52,7 +51,6 @@ body::before {
   transform: rotate(30deg);
 }
 
-/* Card */
 .card {
   background: #fffdf7;
   border-radius: 3.5rem 3.5rem 3rem 3rem;
@@ -120,7 +118,6 @@ body::before {
   display: inline-block;
 }
 
-/* Navigation */
 .nav-buttons {
   display: flex;
   align-items: center;
@@ -162,7 +159,6 @@ body::before {
   filter: grayscale(0.2);
 }
 
-/* Reveal button */
 .start-btn-wrapper {
   display: flex;
   justify-content: center;
@@ -193,7 +189,6 @@ body::before {
   display: none;
 }
 
-/* Animations */
 .fade-in {
   animation: gentleFade 0.45s ease-in-out;
 }
@@ -203,7 +198,6 @@ body::before {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
 @media (max-width: 500px) {
   .card {
     padding: 2.2rem 1.5rem;
