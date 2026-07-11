@@ -1,6 +1,3 @@
-// === Shared Verse Data & Functions ===
-
-// Default verses (used if localStorage is empty)
 const DEFAULT_VERSES = [
   { en: "“There is only one you in this world.”", sw: "Kuna wewe mmoja tu duniani kote." },
   { en: "“Your uniqueness is your superpower.”", sw: "Upekee wako ndio nguvu yako kuu." },
@@ -16,7 +13,6 @@ const DEFAULT_VERSES = [
   { en: "“Your story is written by no one else but you.”", sw: "Hadithi yako imeandikwa na mtu mwingine yeyote isipokuwa wewe." }
 ];
 
-// Get verses from localStorage or return defaults
 function getVerses() {
   const stored = localStorage.getItem('peaceVerses');
   if (stored) {
@@ -29,17 +25,14 @@ function getVerses() {
   return DEFAULT_VERSES;
 }
 
-// Save verses to localStorage
 function saveVerses(verses) {
   localStorage.setItem('peaceVerses', JSON.stringify(verses));
 }
 
-// === User Interface Logic (only runs on index.html) ===
 if (document.getElementById('revealCardBtn')) {
   (function() {
     let currentIndex = 0;
     let verses = getVerses();
-    const totalVerses = () => verses.length;
 
     const startSection = document.getElementById('startSection');
     const revealBtn = document.getElementById('revealCardBtn');
@@ -51,7 +44,7 @@ if (document.getElementById('revealCardBtn')) {
     const nextBtn = document.getElementById('nextBtn');
 
     function updateVerseDisplay() {
-      verses = getVerses(); // Refresh from storage
+      verses = getVerses();
       if (verses.length === 0) {
         englishDisplay.textContent = "No verses available.";
         swahiliDisplay.textContent = "";
@@ -123,7 +116,6 @@ if (document.getElementById('revealCardBtn')) {
       }
     });
 
-    // Initialize
     if (verses.length > 0) {
       const first = verses[0];
       englishDisplay.textContent = first.en;
